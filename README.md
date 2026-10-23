@@ -71,7 +71,7 @@ npm run dev
 cd frontend && npm run e2e
 ~~~
 
-当前基线：**139 后端测试 + 15 E2E**（Chrome 桌面/移动 + WebKit）。
+当前基线：**139 后端测试 + 15 E2E**（Chrome 桌面/移动 + WebKit）。CI 为缩短安装时间只跑 Chromium；WebKit 在本地/发布前验证。
 
 ## 目录
 
