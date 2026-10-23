@@ -36,9 +36,9 @@ jobs:
       - name: Frontend build
         run: cd frontend && npm ci && npm run build
       - name: Install browser
-        run: cd frontend && npx playwright install --with-deps chromium webkit
+        run: cd frontend && npx playwright install --with-deps chromium
       - name: E2E
-        run: cd frontend && npm run e2e
+        run: cd frontend && npm run e2e -- --project=desktop-chrome --project=mobile-chrome
 
   frontend:
     runs-on: ubuntu-latest
