@@ -1,5 +1,8 @@
 # CAD Agent Platform
 
+[![CI](https://github.com/GUIDchen/cad-agent-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/GUIDchen/cad-agent-platform/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 [中文](#中文) | [English](#english)
 
 CAD 协同与参数化出图平台：Vue 3 + FastAPI + PostgreSQL/SQLite + Redis，覆盖图纸版本、审批、检出锁、审计、DXF 生成、BOM、AI 解析/绘图与 RAG 知识库。
@@ -20,6 +23,16 @@ CAD 协同与参数化出图平台：Vue 3 + FastAPI + PostgreSQL/SQLite + Redis
 - 体验：深色模式、命令面板、骨架屏、中英 i18n。
 - 运维：Prometheus/Grafana、备份/恢复/校验、审计清理。
 
+## 截图
+
+| 图纸 | 详情 |
+|---|---|
+| ![图纸](docs/assets/platform-drawings.png) | ![详情](docs/assets/platform-detail.png) |
+
+| 看板 | AI 绘图 |
+|---|---|
+| ![看板](docs/assets/platform-dashboard.png) | ![AI 绘图](docs/assets/platform-images.png) |
+
 ## 技术栈
 
 | 层 | 技术 |
@@ -32,7 +45,7 @@ CAD 协同与参数化出图平台：Vue 3 + FastAPI + PostgreSQL/SQLite + Redis
 ## 快速开始
 
 ~~~bash
-git clone <repo-url>
+git clone https://github.com/GUIDchen/cad-agent-platform.git
 cd cad-agent-platform
 cp backend/.env.example backend/.env
 python3 -m venv .venv

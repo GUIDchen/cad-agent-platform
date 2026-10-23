@@ -11,7 +11,7 @@ run:
 	cd backend && ../.venv/bin/uvicorn app.main:app --reload --port 8000
 
 worker:
-	.venv/bin/python worker/worker.py
+	cd backend && ../.venv/bin/python -m app.worker
 
 web:
 	cd frontend && npm install && npm run dev
