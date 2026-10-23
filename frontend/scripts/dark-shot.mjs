@@ -1,0 +1,12 @@
+import { chromium } from '@playwright/test'
+const browser = await chromium.launch({ channel: 'chrome', headless: true })
+const page = await browser.newPage({ viewport: { width: 1440, height: 900 }, baseURL: 'http://127.0.0.1:8000' })
+await page.goto('/login')
+await page.getByRole('button', { name: /设计员/ }).click()
+await page.waitForURL(/\/drawings/)
+await page.getByRole('button', { name: '切换深色' }).click()
+await page.goto('/dashboard')
+await page.waitForTimeout(800)
+await page.screenshot({ path: '/tmp/dark-dashboard.png' })
+await browser.close()
+console.log('dark shot saved')

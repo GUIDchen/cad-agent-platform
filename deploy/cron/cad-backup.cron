@@ -1,0 +1,2 @@
+# 每日 02:00 备份，保留 14 份
+0 2 * * * cd /opt/cad-agent-platform && .venv/bin/python tools/backup.py --out /backup/cad --keep 14 >> /var/log/cad-backup.log 2>&1

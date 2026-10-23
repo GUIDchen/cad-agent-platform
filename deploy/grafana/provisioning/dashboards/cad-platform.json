@@ -1,0 +1,59 @@
+{
+  "uid": "cad-platform",
+  "title": "CAD Agent Platform",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "30s",
+  "time": { "from": "now-6h", "to": "now" },
+  "panels": [
+    {
+      "id": 1,
+      "type": "timeseries",
+      "title": "请求速率",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        { "expr": "sum(rate(cad_requests_total[5m]))", "legendFormat": "rps" }
+      ]
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "排队任务",
+      "gridPos": { "h": 8, "w": 6, "x": 12, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [{ "expr": "cad_jobs_queued" }]
+    },
+    {
+      "id": 3,
+      "type": "stat",
+      "title": "图纸总数",
+      "gridPos": { "h": 8, "w": 6, "x": 18, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [{ "expr": "cad_drawings_total" }]
+    },
+    {
+      "id": 4,
+      "type": "timeseries",
+      "title": "平均请求耗时",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        {
+          "expr": "sum(rate(cad_request_duration_seconds_sum[5m])) / sum(rate(cad_request_duration_seconds_count[5m]))",
+          "legendFormat": "seconds"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "type": "timeseries",
+      "title": "5xx 请求速率",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        { "expr": "sum(rate(cad_requests_total{status=~\"5..\"}[5m]))", "legendFormat": "5xx" }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install
+        run: pip install -r backend/requirements-dev.txt
+      - name: Lint
+        run: ruff check backend tests tools
+      - name: Test
+        run: pytest -q
+
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Backend env
+        run: |
+          python -m venv .venv
+          .venv/bin/pip install -r backend/requirements-dev.txt
+      - name: Frontend build
+        run: cd frontend && npm ci && npm run build
+      - name: Install browser
+        run: cd frontend && npx playwright install --with-deps chromium webkit
+      - name: E2E
+        run: cd frontend && npm run e2e
+
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Build
+        run: cd frontend && npm ci && npm run build

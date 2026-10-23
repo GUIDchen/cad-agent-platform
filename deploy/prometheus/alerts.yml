@@ -1,0 +1,24 @@
+groups:
+  - name: cad-platform
+    rules:
+      - alert: CadApiDown
+        expr: up{job="cad-api"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "CAD API 不可达"
+      - alert: CadHighErrorRate
+        expr: 'sum(rate(cad_requests_total{status=~"5.."}[5m])) > 0.1'
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "5xx 请求速率超过 0.1/s"
+      - alert: CadQueueBacklog
+        expr: cad_jobs_queued > 10
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "生成任务排队超过 10 个"

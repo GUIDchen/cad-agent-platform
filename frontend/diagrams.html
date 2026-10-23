@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: #eef2f8;
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+    color: #0f172a;
+  }
+  .diagram {
+    width: 1500px; margin: 0 auto; padding: 52px;
+    background: #fff;
+  }
+  .kicker { color: #2563eb; font-size: 13px; letter-spacing: .22em; font-weight: 700; margin: 0 0 10px; }
+  h1 { font-size: 36px; margin: 0 0 8px; letter-spacing: -.03em; }
+  .sub { color: #64748b; font-size: 15px; margin: 0 0 32px; }
+  .arch { display: flex; align-items: stretch; gap: 10px; }
+  .col { flex: 1; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 18px; padding: 14px; }
+  .col-title { font-size: 12px; color: #64748b; font-weight: 700; letter-spacing: .12em; margin: 2px 0 10px; }
+  .node { background: #fff; border: 1px solid #dbe3ef; border-radius: 12px; padding: 11px 12px; margin-bottom: 9px; box-shadow: 0 4px 12px rgba(15,23,42,.04); }
+  .node b { display: block; font-size: 14px; }
+  .node span { display: block; color: #64748b; font-size: 11px; margin-top: 3px; line-height: 1.5; }
+  .arrow { width: 34px; display: grid; place-items: center; color: #94a3b8; font-size: 22px; }
+  .foot { margin-top: 20px; display: flex; gap: 10px; }
+  .pill { padding: 8px 14px; border-radius: 999px; background: #eff6ff; color: #1d4ed8; font-size: 12px; border: 1px solid #bfdbfe; }
+  .layer { display: flex; gap: 12px; margin-bottom: 10px; align-items: stretch; }
+  .layer-label { width: 120px; flex: none; display: grid; place-items: center; border-radius: 12px; background: #0b1220; color: #e2e8f0; font-size: 13px; font-weight: 700; }
+  .layer-body { flex: 1; display: flex; gap: 10px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 12px; }
+  .chip { flex: 1; background: #fff; border: 1px solid #dbe3ef; border-radius: 10px; padding: 10px 12px; font-size: 13px; }
+  .chip small { display: block; color: #64748b; font-size: 11px; margin-top: 3px; }
+  .side { display: flex; gap: 10px; margin-top: 16px; }
+  .side .box { flex: 1; border: 1px dashed #bfdbfe; background: #eff6ff; border-radius: 12px; padding: 12px 14px; color: #1e40af; font-size: 13px; }
+  .deploy { display: grid; grid-template-columns: 1.1fr 2fr 1.1fr; gap: 16px; align-items: start; }
+  .zone { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; padding: 16px; }
+  .zone h3 { margin: 0 0 12px; font-size: 14px; color: #334155; }
+  .svc { background: #fff; border: 1px solid #dbe3ef; border-radius: 10px; padding: 9px 11px; margin-bottom: 8px; font-size: 12px; }
+  .svc b { font-size: 13px; }
+  .port { color: #2563eb; font-weight: 700; }
+  .timeline { position: relative; padding: 20px 0 10px; }
+  .timeline::before { content: ""; position: absolute; left: 24px; right: 24px; top: 58px; height: 4px; background: #e2e8f0; border-radius: 4px; }
+  .phases { display: grid; grid-template-columns: repeat(6, 1fr); gap: 14px; position: relative; }
+  .phase { background: #fff; border: 1px solid #dbe3ef; border-radius: 14px; padding: 14px; }
+  .dot { width: 18px; height: 18px; border-radius: 50%; background: #2563eb; margin: 0 0 12px; border: 4px solid #dbeafe; }
+  .phase.done .dot { background: #10b981; border-color: #d1fae5; }
+  .phase.part .dot { background: #f59e0b; border-color: #fef3c7; }
+  .phase.block .dot { background: #ef4444; border-color: #fee2e2; }
+  .phase b { display: block; font-size: 13px; }
+  .phase span { display: block; color: #64748b; font-size: 11px; margin-top: 5px; line-height: 1.5; }
+  .phase em { display: inline-block; font-style: normal; font-size: 10px; margin-top: 8px; padding: 2px 7px; border-radius: 999px; background: #f1f5f9; color: #475569; }
+  .flow { display: flex; align-items: center; gap: 8px; }
+  .step { flex: 1; background: #f8fafc; border: 1px solid #dbe3ef; border-radius: 12px; padding: 13px; text-align: center; font-size: 13px; }
+  .step small { display: block; color: #64748b; font-size: 11px; margin-top: 4px; }
+  .step-arrow { color: #94a3b8; font-size: 20px; }
+  .branch { margin-top: 16px; padding: 14px 16px; border-left: 4px solid #f59e0b; background: #fffbeb; border-radius: 0 10px 10px 0; font-size: 13px; color: #92400e; }
+  .models { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .model { background: #f8fafc; border: 1px solid #dbe3ef; border-radius: 12px; padding: 12px; }
+  .model b { font-size: 13px; }
+  .model span { display: block; color: #64748b; font-size: 11px; margin-top: 5px; line-height: 1.6; }
+</style>
+</head>
+<body>
+
+<section id="arch-overall" class="diagram">
+  <p class="kicker">SYSTEM ARCHITECTURE</p>
+  <h1>总体架构</h1>
+  <p class="sub">浏览器、API、业务服务、基础设施与外部 CAD/AI 系统的分层关系</p>
+  <div class="arch">
+    <div class="col">
+      <div class="col-title">接入层</div>
+      <div class="node"><b>Vue 3 工作台</b><span>Element Plus / ECharts / 移动端</span></div>
+      <div class="node"><b>企业微信</b><span>SSO / 审批卡片 / 事件回调</span></div>
+      <div class="node"><b>Alertmanager</b><span>告警 Webhook</span></div>
+    </div>
+    <div class="arrow">→</div>
+    <div class="col">
+      <div class="col-title">接口层</div>
+      <div class="node"><b>FastAPI</b><span>REST / OpenAPI / Pydantic</span></div>
+      <div class="node"><b>安全中间件</b><span>鉴权 / CSRF / 限流 / 安全头</span></div>
+      <div class="node"><b>可观测</b><span>请求 ID / 指标 / 审计</span></div>
+    </div>
+    <div class="arrow">→</div>
+    <div class="col">
+      <div class="col-title">业务层</div>
+      <div class="node"><b>图纸与版本</b><span>创建 / 上传 / 锁 / 预览</span></div>
+      <div class="node"><b>审批与审计</b><span>状态机 / 只追加日志</span></div>
+      <div class="node"><b>生成与 AI</b><span>DXF / BOM / Agent / 绘图</span></div>
+    </div>
+    <div class="arrow">→</div>
+    <div class="col">
+      <div class="col-title">基础设施</div>
+      <div class="node"><b>PostgreSQL / SQLite</b><span>SQLAlchemy 2 + Alembic</span></div>
+      <div class="node"><b>Redis</b><span>重放 / 限流 / 指标</span></div>
+      <div class="node"><b>MinIO / 本地存储</b><span>DXF / PNG / 备份</span></div>
+      <div class="node"><b>Worker</b><span>inline / external adapter</span></div>
+    </div>
+    <div class="arrow">→</div>
+    <div class="col">
+      <div class="col-title">外部系统</div>
+      <div class="node"><b>CAD / EDA</b><span>AutoCAD / SolidWorks / Altium</span></div>
+      <div class="node"><b>LLM / Dify</b><span>OpenAI 兼容 / 工具调用</span></div>
+      <div class="node"><b>ComfyUI</b><span>AI 绘图工作流</span></div>
+      <div class="node"><b>ERP</b><span>BOM 回写</span></div>
+    </div>
+  </div>
+  <div class="foot">
+    <span class="pill">Prometheus</span>
+    <span class="pill">Grafana</span>
+    <span class="pill">Alertmanager</span>
+    <span class="pill">Docker Compose</span>
+    <span class="pill">Playwright E2E</span>
+  </div>
+</section>
+
+<section id="arch-layers" class="diagram">
+  <p class="kicker">LAYERED ARCHITECTURE</p>
+  <h1>分层架构</h1>
+  <p class="sub">从页面到基础设施的依赖方向；安全、审计、可观测横切</p>
+  <div class="layer">
+    <div class="layer-label">表现层</div>
+    <div class="layer-body">
+      <div class="chip">登录 / 图纸 / 详情<small>Vue 单页应用</small></div>
+      <div class="chip">项目 / 用户 / 审计<small>Element Plus 表格与弹窗</small></div>
+      <div class="chip">看板 / AI 绘图 / 助手<small>ECharts + 流式交互</small></div>
+    </div>
+  </div>
+  <div class="layer">
+    <div class="layer-label">接口层</div>
+    <div class="layer-body">
+      <div class="chip">REST API<small>47 个路由</small></div>
+      <div class="chip">请求校验<small>Pydantic 2</small></div>
+      <div class="chip">错误码 / OpenAPI<small>统一 detail.code</small></div>
+    </div>
+  </div>
+  <div class="layer">
+    <div class="layer-label">应用层</div>
+    <div class="layer-body">
+      <div class="chip">approval<small>通过 / 驳回 / 当前版本</small></div>
+      <div class="chip">generation<small>任务 / finalize / 适配器</small></div>
+      <div class="chip">upload<small>DXF/DWG / 扫描 / 预览</small></div>
+      <div class="chip">bom / ai<small>CSV / 解析 / Agent / 绘图</small></div>
+    </div>
+  </div>
+  <div class="layer">
+    <div class="layer-label">领域与数据</div>
+    <div class="layer-body">
+      <div class="chip">8 张业务表<small>User/Project/Drawing/Version/Job/Approval/Audit/Member</small></div>
+      <div class="chip">版本不可变<small>唯一约束 + 当前版本指针</small></div>
+      <div class="chip">只追加审计<small>IP / action / object / detail</small></div>
+    </div>
+  </div>
+  <div class="layer">
+    <div class="layer-label">基础设施</div>
+    <div class="layer-body">
+      <div class="chip">SQLAlchemy + Alembic<small>SQLite / PostgreSQL</small></div>
+      <div class="chip">storage / state<small>本地 / S3 / Redis</small></div>
+      <div class="chip">notify / llm / comfy<small>mock 优先，真实可切</small></div>
+    </div>
+  </div>
+  <div class="side">
+    <div class="box">横切：鉴权、CSRF、限流、安全头、病毒扫描</div>
+    <div class="box">横切：请求 ID、Prometheus、审计、告警</div>
+    <div class="box">横切：pytest、Playwright、ruff、CI</div>
+  </div>
+</section>
+
+<section id="arch-deploy" class="diagram">
+  <p class="kicker">DEPLOYMENT</p>
+  <h1>部署架构</h1>
+  <p class="sub">Docker Compose 单机交付；生产可平滑迁移到托管数据库与对象存储</p>
+  <div class="deploy">
+    <div class="zone">
+      <h3>入口</h3>
+      <div class="svc"><b>Nginx / Web</b> <span class="port">:8080</span><br/>静态资源 + 反向代理</div>
+      <div class="svc"><b>Browser</b><br/>HTTPS / Cookie / CSRF</div>
+    </div>
+    <div class="zone">
+      <h3>应用与数据</h3>
+      <div class="svc"><b>API · FastAPI</b> <span class="port">:8000</span><br/>鉴权 / 业务 / 审计 / 指标</div>
+      <div class="svc"><b>PostgreSQL</b> <span class="port">:5432</span><br/>业务数据 / Alembic</div>
+      <div class="svc"><b>Redis</b> <span class="port">:6379</span><br/>重放 / 限流 / 指标</div>
+      <div class="svc"><b>MinIO</b> <span class="port">:9000</span><br/>DXF / PNG / 备份</div>
+      <div class="svc"><b>Worker</b><br/>inline / external CAD adapter</div>
+    </div>
+    <div class="zone">
+      <h3>可观测</h3>
+      <div class="svc"><b>Prometheus</b> <span class="port">:9090</span><br/>抓取 /api/metrics</div>
+      <div class="svc"><b>Alertmanager</b> <span class="port">:9093</span><br/>告警路由</div>
+      <div class="svc"><b>Grafana</b> <span class="port">:3000</span><br/>看板</div>
+    </div>
+  </div>
+  <div class="side">
+    <div class="box">备份：DB dump/复制 + storage tar + manifest sha256</div>
+    <div class="box">恢复：校验 manifest → dry-run → 恢复演练</div>
+    <div class="box">生产：HTTPS、强 SECRET_KEY、ALLOW_DEV_AUTH=false</div>
+  </div>
+</section>
+
+<section id="roadmap" class="diagram">
+  <p class="kicker">ROADMAP</p>
+  <h1>技术路线图</h1>
+  <p class="sub">16–20 周生产计划；绿色已完成、橙色部分完成、红色依赖外部环境</p>
+  <div class="timeline">
+    <div class="phases">
+      <div class="phase done"><div class="dot"></div><b>需求与架构</b><span>岗位拆解 / 选型 / 数据模型</span><em>第 1 周</em></div>
+      <div class="phase done"><div class="dot"></div><b>平台主链路</b><span>登录 / 项目 / 图纸 / 版本</span><em>第 2–4 周</em></div>
+      <div class="phase done"><div class="dot"></div><b>DXF 与审批</b><span>生成 / 预览 / 锁 / 审计</span><em>第 5–7 周</em></div>
+      <div class="phase part"><div class="dot"></div><b>AI 与企微</b><span>解析 / Agent / 卡片 / 通知</span><em>第 8–10 周</em></div>
+      <div class="phase done"><div class="dot"></div><b>测试与部署</b><span>pytest / E2E / 监控 / 备份</span><em>第 11–12 周</em></div>
+      <div class="phase block"><div class="dot"></div><b>真机与试点</b><span>CAD / EDA / ERP / 验收</span><em>第 13–20 周</em></div>
+    </div>
+  </div>
+  <div class="side">
+    <div class="box">已完成：92 个后端测试、9 条 E2E、Compose、监控、备份工具</div>
+    <div class="box">部分完成：AI/企微代码闭环，真实服务未联调</div>
+    <div class="box">阻塞：Windows CAD、ComfyUI/Dify、ERP、企业微信凭证</div>
+  </div>
+</section>
+
+<section id="flow-approval" class="diagram">
+  <p class="kicker">WORKFLOW</p>
+  <h1>图纸生成与审批流程</h1>
+  <p class="sub">从参数输入到版本归档，检出锁与审计贯穿全程</p>
+  <div class="flow">
+    <div class="step">创建图纸<small>图号 / 项目</small></div>
+    <div class="step-arrow">→</div>
+    <div class="step">参数 / AI 解析<small>尺寸 / 孔 / 材料</small></div>
+    <div class="step-arrow">→</div>
+    <div class="step">生成任务<small>inline / external</small></div>
+    <div class="step-arrow">→</div>
+    <div class="step">版本 + 预览<small>sha256 / PNG</small></div>
+    <div class="step-arrow">→</div>
+    <div class="step">待审批<small>当前版本校验</small></div>
+    <div class="step-arrow">→</div>
+    <div class="step">通过 / 驳回<small>审计 + 通知</small></div>
+  </div>
+  <div class="branch">检出锁：设计员检出后 30 分钟内独占；过期自动释放；他人生成/检入返回 409；管理员可强制检入。</div>
+  <div class="side">
+    <div class="box">每一步写审计：创建 / 生成 / 上传 / 审批 / 成员变更</div>
+    <div class="box">通知：mock 文件或企业微信；失败进死信可重试</div>
+    <div class="box">AI 失败回退规则，不阻塞生成</div>
+  </div>
+</section>
+
+<section id="data-model" class="diagram">
+  <p class="kicker">DATA MODEL</p>
+  <h1>核心数据模型</h1>
+  <p class="sub">8 张业务表；版本只追加，审批与审计可追溯</p>
+  <div class="models">
+    <div class="model"><b>User</b><span>id / name / role / active</span></div>
+    <div class="model"><b>Project</b><span>id / name / owner_id / status</span></div>
+    <div class="model"><b>ProjectMember</b><span>project_id / user_id / role</span></div>
+    <div class="model"><b>Drawing</b><span>project_id / drawing_no / status / current_version_id</span></div>
+    <div class="model"><b>Version</b><span>drawing_id / version / file_path / sha256</span></div>
+    <div class="model"><b>Job</b><span>id / drawing_id / type / status</span></div>
+    <div class="model"><b>Approval</b><span>version_id / reviewer_id / status</span></div>
+    <div class="model"><b>AuditLog</b><span>actor_id / action / object / ip / created_at</span></div>
+  </div>
+  <div class="side">
+    <div class="box">关系：Project 1–N Drawing；Drawing 1–N Version；Version 1–N Approval</div>
+    <div class="box">约束：drawing_no 唯一；(drawing_id, version) 唯一；(project_id, user_id) 唯一</div>
+    <div class="box">索引：project_id / status / created_by / actor_id / action / created_at</div>
+  </div>
+</section>
+
+
+<section id="ai-routing" class="diagram">
+  <p class="kicker">MODEL ROUTING</p>
+  <h1>AI 模型调用路线</h1>
+  <p class="sub">统一 OpenAI 兼容网关；主用/备用/本地三层，失败回退规则或 mock</p>
+  <div class="arch">
+    <div class="col">
+      <div class="col-title">应用入口</div>
+      <div class="node"><b>参数解析</b><span>/api/ai/parse</span></div>
+      <div class="node"><b>Agent</b><span>/api/ai/agent</span></div>
+      <div class="node"><b>AI 绘图</b><span>/api/ai/image</span></div>
+      <div class="node"><b>CAD 生成</b><span>/generate + adapter</span></div>
+    </div>
+    <div class="arrow">→</div>
+    <div class="col">
+      <div class="col-title">模型网关</div>
+      <div class="node"><b>OpenAI 兼容</b><span>LLM_BASE_URL / API_KEY</span></div>
+      <div class="node"><b>路由与重试</b><span>主用 → 备用 → 规则</span></div>
+      <div class="node"><b>成本与日志</b><span>token / 延迟 / 失败</span></div>
+      <div class="node"><b>安全</b><span>限流 / 密钥 / 审计</span></div>
+    </div>
+    <div class="arrow">→</div>
+    <div class="col">
+      <div class="col-title">模型提供方</div>
+      <div class="node"><b>DeepSeek-V3</b><span>主用：中文 / 工具调用 / 性价比</span></div>
+      <div class="node"><b>Qwen2.5</b><span>主用/备用：中文 / function calling</span></div>
+      <div class="node"><b>GLM-4-Flash</b><span>备用：低成本 / 快速</span></div>
+      <div class="node"><b>BGE-M3 + Reranker</b><span>Embedding / 重排（规划 RAG）</span></div>
+      <div class="node"><b>SDXL / FLUX</b><span>ComfyUI 工作流出图</span></div>
+    </div>
+    <div class="arrow">→</div>
+    <div class="col">
+      <div class="col-title">数据与工具</div>
+      <div class="node"><b>pgvector</b><span>知识库检索（规划）</span></div>
+      <div class="node"><b>工具注册</b><span>list/create/generate</span></div>
+      <div class="node"><b>存储</b><span>DXF / PNG / 审计</span></div>
+      <div class="node"><b>兜底</b><span>规则解析 / mock 图</span></div>
+    </div>
+  </div>
+  <div class="foot">
+    <span class="pill">主用：DeepSeek-V3 / Qwen2.5</span>
+    <span class="pill">备用：GLM-4-Flash</span>
+    <span class="pill">本地：BGE-M3 / SDXL</span>
+    <span class="pill">网关：LiteLLM / OneAPI / Dify</span>
+  </div>
+</section>
+
+</body>
+</html>
